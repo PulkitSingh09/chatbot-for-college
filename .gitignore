@@ -1,0 +1,46 @@
+# Logs
+*.log
+__pycache__/
+*.pyc
+
+# Python env
+.env
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Frontend build
+frontend/dist/
+frontend/node_modules/
+
+# System
+.DS_Store
+.idea/
+.vscode/
+
+# Python specific
+*.egg-info/
+# Ignore Python cache files
+*.pyc
+# Ignore Python bytecode files
+__pycache__/
+# Ignore Python virtual environments
+venv/
+# Ignore Python distribution files
+*.egg
+# Ignore Python distribution archives
+*.whl
+# Ignore Python test cache
+.pytest_cache/
+# Ignore Python type checking cache
+.mypy_cache/
+# Ignore Python coverage reports
+.coverage
+# Ignore Python packaging files
+*.egg-info/
+
+
+

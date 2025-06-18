@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+  
+  body {
+    @apply antialiased cursor-none;
+  }
+}
+
+.cursor-dot {
+  width: 5px;
+  height: 5px;
+  background-color: theme('colors.indigo.600');
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999999;
+  transition: background-color 0.3s ease;
+}
+
+.cursor-outline {
+  width: 30px;
+  height: 30px;
+  border: 2px solid theme('colors.indigo.600');
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999999;
+  transition: all 0.3s ease;
+}
+
+.dark .cursor-dot {
+  background-color: theme('colors.blue.400');
+}
+
+.dark .cursor-outline {
+  border-color: theme('colors.blue.400');
+}
+
+/* Custom scrollbar for chat */
+.scroll-smooth::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-smooth::-webkit-scrollbar-track {
+  @apply bg-white/20 dark:bg-gray-800/20 rounded-full;
+}
+
+.scroll-smooth::-webkit-scrollbar-thumb {
+  @apply bg-indigo-600/50 dark:bg-blue-500/50 rounded-full hover:bg-indigo-700/50 dark:hover:bg-blue-600/50;
+}
+
+/* Hide scrollbar initially, show on hover */
+.scroll-smooth {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.5) transparent;
+}
+
+.scroll-smooth:hover::-webkit-scrollbar-thumb {
+  @apply bg-indigo-600/70 dark:bg-blue-500/70;
+}
+
+/* Glass morphism effects */
+.glass-light {
+  @apply bg-white/20 backdrop-blur-xl border border-white/30 shadow-xl;
+}
+
+/* Smooth transitions for all interactive elements */
+button, input, select {
+  transition: all 0.2s ease;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  @apply outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-transparent;
+}

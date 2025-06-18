@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+"""Install pip as a standalone zip application."""
+
+import runpy
+import sys
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
+
+URL = "https://bootstrap.pypa.io/pip/get-pip.py"
+
+def main():
+    with urlopen(URL) as response:
+        script = response.read()
+    code = compile(script, URL, "exec")
+    runpy.run_code(code, run_name="__main__")
+
+if __name__ == "__main__":
+    sys.exit(main())

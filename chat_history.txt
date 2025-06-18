@@ -1,0 +1,138 @@
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hi
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: GPT Error: {"error":{"message":"No auth credentials found","code":401}}
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: what are college timings
+Bot: College runs from 9 AM to 5 PM.
+
+User: scholarship ?
+Bot: Sorry, I couldn't find answers.
+
+User: hostel facilities
+Bot: Sorry, I couldn't find answers.
+
+User: srm
+Bot: GPT Error: {"error":{"message":"No auth credentials found","code":401}}
+
+User: aadmin
+Bot: Sorry, I couldn't find answers.
+
+User: admin
+Bot: Sorry, I couldn't find answers.
+
+User: college timings
+Bot: College runs from 9 AM to 5 PM.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: what are college timings
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hello
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hey
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot:  Hii,how are you today. 
+
+User: hey
+Bot:  Hey,how are you today. 
+
+User: hello
+Bot:  Hello,how are you today. 
+
+User: college timings
+Bot: College operates from 8 AM to 5 PM. Based on respective batches 1 or 2
+
+User: how are you
+Bot:  Great,good to see you. 
+
+User: attendance /
+Bot: Yes, students must maintain at least 75% attendance.
+
+User: hostel facilites ?
+Bot: Sorry, I couldn't find answers.
+
+User: hostel facilities
+Bot: Sorry, I couldn't find answers.
+
+User: scholarship?
+Bot: You can apply through the college portal under the scholarship section.
+
+User: does the college offer hostel facilities
+Bot: Yes, hostel facilities are available for both boys and girls.
+
+User: semester exams
+Bot: Semester exams usually start in December and May.
+
+User: wi-fi
+Bot: Yes, free Wi-Fi is available for all registered students.
+
+User: library
+Bot: The library is open from 7 AM to 12 midnight .
+
+User: library book limit ?
+Bot: Students can borrow up to 3 books at a time.
+
+User: hackathons ?
+Bot: Yes, intra and inter-college hackathons are organized.
+
+User: programming languages ?
+Bot: C, C++, Java, Python, and JavaScript are taught.
+
+User: counselling service ?
+Bot: Yes, professional counselors are available on campus.
+
+User: grading system ?
+Bot: Grades are based on CGPA (10-point scale).
+
+User: foreign exchange ?
+Bot: Yes, with partner universities.
+
+User: srm sports ?
+Bot: Sorry, I couldn't find answers.
+
+User: hello
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hii
+Bot: Sorry, I couldn't find answers.
+
+User: hello
+Bot: Sorry, I couldn't find answers.
+
