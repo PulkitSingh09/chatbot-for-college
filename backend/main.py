@@ -16,14 +16,13 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://chatbot-for-college.vercel.app"],  # Adjust if your frontend is on a different origin
+    allow_origins=["https://chatbot-for-college.vercel.app/"],  # Adjust if your frontend is on a different origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# ==== DATABASE SETUP ====
-# Using faq.db as specified in your file, but ensure consistency
-DATABASE_URL = "sqlite:///./faq.db" # Or "sqlite:///./college_chatbot.db" if that's your primary DB
+#  DATABASE SETUP 
+DATABASE_URL = "sqlite:///./faq.db" 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
