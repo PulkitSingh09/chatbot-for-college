@@ -16,7 +16,7 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://chatbot-for-college.vercel.app/"],  # Adjust if your frontend is on a different origin
+    allow_origins=["https://chatbot-for-college.vercel.app"],  # Adjust if your frontend is on a different origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
