@@ -176,9 +176,13 @@ function App() {
 
   try {
     let botReply = '';
-
+    const API_URL = import.meta.env.VITE_API_URL;
+    if (!API_URL) {
+      throw new Error('API URL is not defined. Please set VITE_API_URL in your environment variables.');
+    }
+    
     if (mode === 'FAQ') {
-      const res = await fetch(`http://127.0.0.1:8000/search?q=${encodeURIComponent(message)}`);
+      const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(message)}`);
       const data = await res.json();
 
       if (Array.isArray(data) && data.length > 0) {
@@ -194,7 +198,7 @@ function App() {
         timestamp: Date.now()
       };
       setMessages(prev => [...prev, thinkingMessage]);
-      const res = await fetch('http://127.0.0.1:8000/chat', {
+      const res = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
