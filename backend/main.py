@@ -140,7 +140,7 @@ def chat(data: ChatRequest, db: Session = Depends(lambda: SessionLocal())):
             if score > best_score:
                 best_match = faq
                 best_score = score
-        if best_score >= 50:
+        if best_score >= 40:
             return {"response": best_match.answer}
         else:
             return {"response": " No match found. Try switching to GPT mode."}
