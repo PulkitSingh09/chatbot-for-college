@@ -182,6 +182,19 @@ function App() {
     }
     
     if (mode === 'FAQ') {
+      setMessages(prev => [
+    ...prev,
+    {
+      type: 'user',
+      content: message,
+      timestamp: Date.now(),
+    },
+    {
+      type: 'bot',
+      content: '💭 Thinking...',
+      timestamp: Date.now(),
+    },
+    ]);
       const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(message)}`);
       const data = await res.json();
 
@@ -190,8 +203,16 @@ function App() {
       } else {
         botReply = '❌ No match found in FAQ. Try switching to GPT mode.';
       }
-
-    } else if (mode === 'GPT') {
+      setMessages(prev => [
+      ...prev.slice(0, -1),
+      {
+      type: 'bot',
+      content: botReply,
+      timestamp: Date.now(),
+      },
+      ]);
+      }
+     else if (mode === 'GPT') {
       const thinkingMessage: Message = {
         type: 'bot',
         content: '💭 Thinking...',
