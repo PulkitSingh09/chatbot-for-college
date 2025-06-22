@@ -1,13 +1,18 @@
 # 🎓 Smart College Chatbot
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Frontend: Vercel](https://img.shields.io/badge/Frontend-Vercel-blue)](https://chatbot-for-college.vercel.app)
 [![Backend: Render](https://img.shields.io/badge/Backend-Render-green)](https://chatbot-backend-4eot.onrender.com)
 [![Built with: FastAPI](https://img.shields.io/badge/Built_with-FastAPI-0e83cd?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Built with: React](https://img.shields.io/badge/Built_with-React-61DAFB?logo=react)](https://reactjs.org/)
-[![Built with: TypeScript](https://img.shields.io/badge/TypeScript-Enabled-blue?logo=typescript)](https://www.typescriptlang.org/)
-![Code Size](https://img.shields.io/github/languages/code-size/PulkitSingh09/chatbot-for-college)
-![Model: LLaMA3-8B](https://img.shields.io/badge/OpenRouter-LLaMA--3--8B--Instruct-blueviolet)
-![Last Commit](https://img.shields.io/github/last-commit/PulkitSingh09/chatbot-for-college?color=purple)
+[![TypeScript Enabled](https://img.shields.io/badge/TypeScript-Enabled-blue?logo=typescript)](https://www.typescriptlang.org/)
+
+[![OpenRouter Model](https://img.shields.io/badge/OpenRouter-LLaMA--3--8B--Instruct-blueviolet)](https://openrouter.ai/)
+[![Last Commit](https://img.shields.io/github/last-commit/PulkitSingh09/chatbot-for-college?color=purple)](https://github.com/PulkitSingh09/chatbot-for-college)
+[![Top Lang](https://img.shields.io/github/languages/top/PulkitSingh09/chatbot-for-college)](https://github.com/PulkitSingh09/chatbot-for-college)
+
+![Deployment](https://img.shields.io/badge/Deployed-✔️-brightgreen)
+[![Contributors](https://img.shields.io/github/contributors/PulkitSingh09/chatbot-for-college)](https://github.com/PulkitSingh09/chatbot-for-college/graphs/contributors)
+
 
 
 An intelligent web-based chatbot designed to help students get answers to college-related queries — from FAQs like attendance and hostel rules to dynamic AI-powered responses.
