@@ -41,4 +41,8 @@ What's on your mind? Ask us anything about college, and we'll do our best to hel
 | Hosting   | Vercel (Frontend) + Render (Backend)  |
 =======
 
+🙌 Credits
+Made with ❤️ by Pulkit Singh
+
+
 
