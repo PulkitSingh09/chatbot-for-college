@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import NET from 'vanta/dist/vanta.net.min';
 import * as THREE from 'three';
@@ -173,6 +172,7 @@ function App() {
     timestamp: Date.now()
   };
   setMessages(prev => [...prev, newMessage]);
+  setMessage('');
 
   try {
     let botReply = '';
@@ -183,18 +183,13 @@ function App() {
     
     if (mode === 'FAQ') {
       setMessages(prev => [
-    ...prev,
-    {
-      type: 'user',
-      content: message,
-      timestamp: Date.now(),
-    },
-    {
-      type: 'bot',
-      content: '💭 Thinking...',
-      timestamp: Date.now(),
-    },
-    ]);
+        ...prev,
+        {
+          type: 'bot',
+          content: '💭 Thinking...',
+          timestamp: Date.now(),
+        },
+      ]);
       const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(message)}`);
       const data = await res.json();
 
@@ -451,24 +446,31 @@ function App() {
                   Export
                 </button>
                 
-                <div className="flex-1 flex gap-2">
+                
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSend(); 
+                  }}
+                  className="flex-1 flex gap-2"
+                >
                   <input
+                    
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="Type your message..."
                     className="flex-1 px-4 py-2.5 rounded-xl bg-white/90 dark:bg-gray-700/80 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border-0 shadow-md backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   
                   <button
-                    onClick={handleSend}
-                    className="px-6 py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg flex items-center gap-2 transition-colors"
+                    type="submit"
+                     className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-lg transition-colors flex items-center gap-2"
                   >
                     <Send className="w-5 h-5" />
                     Send
                   </button>
-                </div>
+                  </form>
               </div>
             </div>
           </div>
