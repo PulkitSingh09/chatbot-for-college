@@ -1,36 +1,64 @@
 import { useEffect, useState, useRef } from 'react';
 import NET from 'vanta/dist/vanta.net.min';
 import * as THREE from 'three';
-import { Moon, Sun, Send, Download, LogIn, LogOut, User, ChevronDown, History, Trash2 } from 'lucide-react';
+import { Moon, Sun, Send, Download, LogIn, LogOut, User, ChevronDown, History, Trash2, Menu, X, MessageSquare, Settings, Zap } from 'lucide-react';
 import AuthModal from './components/AuthModal';
 import Footer from './components/Footer';
+import MobileMenu from './components/MobileMenu';
+import TypingIndicator from './components/TypingIndicator';
+import MessageBubble from './components/MessageBubble';
+import QuickActions from './components/QuickActions';
+
 interface User {
   email: string;
   name: string;
 }
+
 interface Message {
   type: 'user' | 'bot';
   content: string;
   timestamp: number;
+  isTyping?: boolean;
 }
+
 // Simple user database simulation
 const userDatabase = new Map<string, { email: string; name: string; password: string }>();
+
 function App() {
   const [vantaEffect, setVantaEffect] = useState<any>(null);
   const [darkMode, setDarkMode] = useState(localStorage.getItem('darkMode') === 'enabled');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    {type: 'bot', content: '👋 Yo! Ask me anything about the college or anything else .', timestamp: Date.now()}
+    {type: 'bot', content: '👋 Welcome! I\'m your Smart College Assistant. Ask me anything about college life, academics, or campus facilities!', timestamp: Date.now()}
   ]);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [mode, setMode] = useState<'FAQ' | 'GPT'>('FAQ');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorOutlineRef = useRef<HTMLDivElement>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const messageInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle window resize for mobile detection
   useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Custom cursor for desktop only
+  useEffect(() => {
+    if (isMobile) return;
+    
     const moveCursor = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       if (cursorDotRef.current) {
@@ -46,21 +74,25 @@ function App() {
         });
       }
     };
+
     const growCursor = () => {
       if (cursorOutlineRef.current) {
         cursorOutlineRef.current.style.transform = 'scale(1.5)';
       }
     };
+
     const shrinkCursor = () => {
       if (cursorOutlineRef.current) {
         cursorOutlineRef.current.style.transform = 'scale(1)';
       }
     };
+
     document.addEventListener('mousemove', moveCursor);
     document.querySelectorAll('button, a, input, select').forEach(el => {
       el.addEventListener('mouseenter', growCursor);
       el.addEventListener('mouseleave', shrinkCursor);
     });
+
     return () => {
       document.removeEventListener('mousemove', moveCursor);
       document.querySelectorAll('button, a, input, select').forEach(el => {
@@ -68,8 +100,9 @@ function App() {
         el.removeEventListener('mouseleave', shrinkCursor);
       });
     };
-  }, []);
-  // Close account menu when clicking outside
+  }, [isMobile]);
+
+  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
@@ -81,7 +114,11 @@ function App() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Vanta background effect (disabled on mobile for performance)
   useEffect(() => {
+    if (isMobile) return;
+    
     if (!vantaEffect) {
       setVantaEffect(
         NET({
@@ -106,13 +143,15 @@ function App() {
     return () => {
       if (vantaEffect) vantaEffect.destroy();
     };
-  }, [darkMode]);
+  }, [darkMode, isMobile]);
+
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     if (chatBoxRef.current && messages.length > 1) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [messages]);
+
   // Load user and chat history from localStorage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -126,16 +165,19 @@ function App() {
       }
     }
   }, []);
+
   // Save chat history whenever messages change and user is logged in
   useEffect(() => {
     if (user && messages.length > 1) {
       saveChatHistory(user.email, messages);
     }
   }, [messages, user]);
+
   const saveChatHistory = (userEmail: string, chatMessages: Message[]) => {
     const chatKey = `chat_history_${userEmail}`;
     localStorage.setItem(chatKey, JSON.stringify(chatMessages));
   };
+
   const loadChatHistory = (userEmail: string) => {
     const chatKey = `chat_history_${userEmail}`;
     const savedChat = localStorage.getItem(chatKey);
@@ -148,14 +190,17 @@ function App() {
       }
     }
   };
+
   const clearChatHistory = () => {
     if (user) {
       const chatKey = `chat_history_${user.email}`;
       localStorage.removeItem(chatKey);
-      setMessages([{type: 'bot', content: '👋 Hi! Ask me anything about the college.', timestamp: Date.now()}]);
+      setMessages([{type: 'bot', content: '👋 Welcome! I\'m your Smart College Assistant. Ask me anything about college life, academics, or campus facilities!', timestamp: Date.now()}]);
       setShowAccountMenu(false);
+      setShowMobileMenu(false);
     }
   };
+
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
@@ -163,91 +208,94 @@ function App() {
     if (vantaEffect) vantaEffect.destroy();
     setVantaEffect(null);
   };
- const handleSend = async () => {
-  if (!message.trim()) return;
 
-  const newMessage: Message = {
-    type: 'user',
-    content: message,
-    timestamp: Date.now()
-  };
-  setMessages(prev => [...prev, newMessage]);
-  setMessage('');
+  const handleSend = async () => {
+    if (!message.trim()) return;
 
-  try {
-    let botReply = '';
-    const API_URL = import.meta.env.VITE_API_URL;
-    if (!API_URL) {
-      throw new Error('API URL is not defined. Please set VITE_API_URL in your environment variables.');
-    }
-    
-    if (mode === 'FAQ') {
-      setMessages(prev => [
-        ...prev,
-        {
-          type: 'bot',
-          content: '💭 Thinking...',
-          timestamp: Date.now(),
-        },
-      ]);
-      const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(message)}`);
-      const data = await res.json();
-
-      if (Array.isArray(data) && data.length > 0) {
-        botReply = data[0].answer;
-      } else {
-        botReply = '❌ No match found in FAQ. Try switching to GPT mode.';
-      }
-      setMessages(prev => [
-      ...prev.slice(0, -1),
-      {
-      type: 'bot',
-      content: botReply,
-      timestamp: Date.now(),
-      },
-      ]);
-      }
-     else if (mode === 'GPT') {
-      const thinkingMessage: Message = {
-        type: 'bot',
-        content: '💭 Thinking...',
-        timestamp: Date.now()
-      };
-      setMessages(prev => [...prev, thinkingMessage]);
-      const res = await fetch(`${API_URL}/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: message,
-          mode: 'gpt'
-})
-      });
-
-      const data = await res.json();
-      botReply = data.response || '⚠️ GPT did not return a valid response.';
-    }
-  setMessages(prev => [
-    ...prev.slice(0, -1), // Remove the last message (the "Thinking..." one)
-    {
-      type: 'bot',
-      content: botReply,
-      timestamp: Date.now()
-    }
-  ]);
- }catch (error) {
-    console.error('Error sending GPT message:', error);
-    const errorMessage: Message = {
-      type: 'bot',
-      content: '⚠️ Error connecting to GPT backend.',
+    const newMessage: Message = {
+      type: 'user',
+      content: message,
       timestamp: Date.now()
     };
-    setMessages(prev => [...prev.slice(0, -1), errorMessage]);
-  }
-}
- const exportChat = () => {
+    setMessages(prev => [...prev, newMessage]);
+    setMessage('');
+    setIsTyping(true);
+
+    // Add typing indicator
+    const typingMessage: Message = {
+      type: 'bot',
+      content: '',
+      timestamp: Date.now(),
+      isTyping: true
+    };
+    setMessages(prev => [...prev, typingMessage]);
+
+    try {
+      let botReply = '';
+      const API_URL = import.meta.env.VITE_API_URL;
+      if (!API_URL) {
+        throw new Error('API URL is not defined. Please set VITE_API_URL in your environment variables.');
+      }
+      
+      if (mode === 'FAQ') {
+        const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(message)}`);
+        const data = await res.json();
+
+        if (Array.isArray(data) && data.length > 0) {
+          botReply = data[0].answer;
+        } else {
+          botReply = '❌ No match found in FAQ. Try switching to GPT mode for more comprehensive answers.';
+        }
+      } else if (mode === 'GPT') {
+        const res = await fetch(`${API_URL}/chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: message,
+            mode: 'gpt'
+          })
+        });
+
+        const data = await res.json();
+        botReply = data.response || '⚠️ GPT did not return a valid response.';
+      }
+
+      // Simulate typing delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setMessages(prev => [
+        ...prev.slice(0, -1), // Remove typing indicator
+        {
+          type: 'bot',
+          content: botReply,
+          timestamp: Date.now()
+        }
+      ]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage: Message = {
+        type: 'bot',
+        content: '⚠️ Error connecting to the server. Please try again.',
+        timestamp: Date.now()
+      };
+      setMessages(prev => [...prev.slice(0, -1), errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleQuickAction = (action: string) => {
+    setMessage(action);
+    if (messageInputRef.current) {
+      messageInputRef.current.focus();
+    }
+  };
+
+  const exportChat = () => {
     const chatContent = messages
+      .filter(msg => !msg.isTyping)
       .map(msg => {
         const date = new Date(msg.timestamp).toLocaleString();
         return `[${date}] ${msg.type === 'user' ? 'You' : 'Bot'}: ${msg.content}`;
@@ -262,9 +310,9 @@ function App() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
   const handleAuth = (userData: User, password: string, isLogin: boolean) => {
     if (isLogin) {
-      // Check if user exists and password matches
       const existingUser = userDatabase.get(userData.email);
       if (!existingUser) {
         throw new Error('User not found. Please sign up first.');
@@ -272,16 +320,13 @@ function App() {
       if (existingUser.password !== password) {
         throw new Error('Invalid password. Please try again.');
       }
-      // Login successful
       setUser({ email: existingUser.email, name: existingUser.name });
       localStorage.setItem('user', JSON.stringify({ email: existingUser.email, name: existingUser.name }));
       loadChatHistory(existingUser.email);
     } else {
-      // Sign up - check if user already exists
       if (userDatabase.has(userData.email)) {
         throw new Error('User already exists. Please sign in instead.');
       }
-      // Create new user
       userDatabase.set(userData.email, {
         email: userData.email,
         name: userData.name,
@@ -293,16 +338,18 @@ function App() {
     }
     setShowAuthModal(false);
   };
+
   const handleLogout = () => {
     if (user) {
-      // Save current chat before logout
       saveChatHistory(user.email, messages);
     }
     setUser(null);
     localStorage.removeItem('user');
-    setMessages([{type: 'bot', content: '👋 Hi! Ask me anything about the college.', timestamp: Date.now()}]);
+    setMessages([{type: 'bot', content: '👋 Welcome! I\'m your Smart College Assistant. Ask me anything about college life, academics, or campus facilities!', timestamp: Date.now()}]);
     setShowAccountMenu(false);
+    setShowMobileMenu(false);
   };
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString('en-US', {
       month: 'short',
@@ -311,39 +358,70 @@ function App() {
       minute: '2-digit'
     });
   };
+
   return (
-    <div className={`min-h-screen flex flex-col ${darkMode ? 'dark' : ''}`}>
-      <div ref={cursorDotRef} className="cursor-dot" />
-      <div ref={cursorOutlineRef} className="cursor-outline" />
-      <div id="vanta-bg" className="fixed inset-0 -z-10" />
+    <div className={`min-h-screen flex flex-col ${darkMode ? 'dark' : ''} ${isMobile ? '' : 'cursor-none'}`}>
+      {!isMobile && (
+        <>
+          <div ref={cursorDotRef} className="cursor-dot" />
+          <div ref={cursorOutlineRef} className="cursor-outline" />
+        </>
+      )}
+      
+      {!isMobile && <div id="vanta-bg" className="fixed inset-0 -z-10" />}
+      {isMobile && (
+        <div className={`fixed inset-0 -z-10 ${darkMode ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900' : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'}`} />
+      )}
       
       <div className="relative z-10 flex flex-col min-h-screen">
         <header className="bg-slate-800/90 dark:bg-black/50 backdrop-blur-md border-b border-slate-700/50 dark:border-gray-800/50 relative z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-white">Smart College Chatbot</h1>
+              <div className="flex items-center gap-3">
+                {isMobile && (
+                  <button
+                    onClick={() => setShowMobileMenu(true)}
+                    className="p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-colors md:hidden"
+                  >
+                    <Menu className="w-5 h-5 text-white" />
+                  </button>
+                )}
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-6 h-6 md:w-8 md:h-8 text-indigo-400" />
+                  <h1 className="text-lg md:text-2xl font-bold text-white">
+                    {isMobile ? 'College Bot' : 'Smart College Chatbot'}
+                  </h1>
+                </div>
+              </div>
               
-              <div className="flex items-center gap-4">
-                <select 
-                  value={mode}
-                  onChange={(e) => setMode(e.target.value as 'FAQ' | 'GPT')}
-                  className="px-8 py-3 text-lg rounded-xl bg-white/90 dark:bg-gray-800/80 text-gray-800 dark:text-white border-0 shadow-lg backdrop-blur-sm font-medium"
-                >
-                  <option value="FAQ">FAQ Mode</option>
-                  <option value="GPT">GPT Mode</option>
-                </select>
+              <div className="flex items-center gap-2 md:gap-4">
+                {!isMobile && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 backdrop-blur-sm">
+                    <Zap className="w-4 h-4 text-yellow-400" />
+                    <select 
+                      value={mode}
+                      onChange={(e) => setMode(e.target.value as 'FAQ' | 'GPT')}
+                      className="px-6 py-2 text-sm md:text-lg rounded-xl bg-white/90 dark:bg-gray-800/80 text-gray-800 dark:text-white border-0 shadow-lg backdrop-blur-sm font-medium"
+                    >
+                      <option value="FAQ">FAQ Mode</option>
+                      <option value="GPT">GPT Mode</option>
+                    </select>
+                  </div>
+                )}
                 
                 {user ? (
                   <div className="relative" ref={accountMenuRef}>
                     <button
                       onClick={() => setShowAccountMenu(!showAccountMenu)}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/20 dark:bg-gray-700/50 backdrop-blur-sm hover:bg-white/30 dark:hover:bg-gray-600/50 transition-colors"
+                      className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-xl bg-white/20 dark:bg-gray-700/50 backdrop-blur-sm hover:bg-white/30 dark:hover:bg-gray-600/50 transition-colors"
                     >
-                      <User className="w-5 h-5 text-white" />
-                      <span className="text-white text-sm font-medium">{user.name}</span>
-                      <ChevronDown className="w-4 h-4 text-white" />
+                      <User className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                      <span className="text-white text-xs md:text-sm font-medium hidden sm:inline">
+                        {user.name.split(' ')[0]}
+                      </span>
+                      <ChevronDown className="w-3 h-3 md:w-4 md:h-4 text-white" />
                     </button>
-                    {showAccountMenu && (
+                    {showAccountMenu && !isMobile && (
                       <div className="absolute right-0 mt-2 w-64 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700/30 py-2 z-[9999]">
                         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                           <p className="text-sm font-medium text-gray-800 dark:text-white">{user.name}</p>
@@ -357,7 +435,7 @@ function App() {
                               <History className="w-4 h-4 text-gray-500" />
                             </div>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {messages.length} messages saved
+                              {messages.filter(m => !m.isTyping).length} messages saved
                             </p>
                             {messages.length > 1 && (
                               <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -388,64 +466,60 @@ function App() {
                 ) : (
                   <button
                     onClick={() => setShowAuthModal(true)}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-lg transition-colors"
+                    className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-lg transition-colors text-xs md:text-sm"
                   >
-                    <LogIn className="w-5 h-5" />
-                    Sign In
+                    <LogIn className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="hidden sm:inline">Sign In</span>
                   </button>
                 )}
                 
                 <button
                   onClick={toggleDarkMode}
-                  className="p-2.5 rounded-xl bg-white/20 hover:bg-white/30 dark:bg-gray-700/50 dark:hover:bg-gray-600/50 backdrop-blur-sm"
+                  className="p-2 md:p-2.5 rounded-xl bg-white/20 hover:bg-white/30 dark:bg-gray-700/50 dark:hover:bg-gray-600/50 backdrop-blur-sm"
                 >
-                  {darkMode ? <Sun className="w-6 h-6 text-gray-300" /> : <Moon className="w-6 h-6 text-gray-700" />}
+                  {darkMode ? <Sun className="w-5 h-5 md:w-6 md:h-6 text-gray-300" /> : <Moon className="w-5 h-5 md:w-6 md:h-6 text-gray-700" />}
                 </button>
               </div>
             </div>
           </div>
         </header>
-        <main className="flex-1 max-w-4xl mx-auto px-4 py-8 w-full relative z-10">
-          <div className="bg-slate-800/80 dark:bg-gray-800/30 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 dark:border-gray-700/30 h-[600px] flex flex-col">
+
+        <main className="flex-1 max-w-4xl mx-auto px-2 md:px-4 py-4 md:py-8 w-full relative z-10">
+          <div className="bg-slate-800/80 dark:bg-gray-800/30 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 dark:border-gray-700/30 h-[calc(100vh-200px)] md:h-[600px] flex flex-col">
             <div 
               ref={chatBoxRef}
-              className={`flex-1 overflow-y-auto p-6 scroll-smooth ${messages.length <= 1 ? 'overflow-hidden' : ''}`}
+              className={`flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth ${messages.length <= 1 ? 'overflow-hidden' : ''}`}
               style={{ 
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgba(99, 102, 241, 0.5) transparent'
               }}
             >
               {messages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`mb-4 ${msg.type === 'user' ? 'text-right' : ''}`}
-                >
-                  <div
-                    className={`inline-block max-w-[80%] rounded-2xl px-4 py-2 ${
-                      msg.type === 'user'
-                        ? 'bg-indigo-600 text-white shadow-lg'
-                        : 'bg-white/90 dark:bg-gray-700 text-gray-800 dark:text-white shadow-md'
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
-                  <div className={`text-xs text-gray-400 mt-1 ${msg.type === 'user' ? 'text-right' : ''}`}>
-                    {formatDate(msg.timestamp)}
-                  </div>
-                </div>
+                <MessageBubble 
+                  key={idx} 
+                  message={msg} 
+                  formatDate={formatDate}
+                  isMobile={isMobile}
+                />
               ))}
             </div>
             
-            <div className="border-t border-slate-700/50 dark:border-gray-700/30 p-4">
-              <div className="flex gap-4">
-                <button
-                  onClick={exportChat}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/90 dark:bg-gray-700/80 text-gray-800 dark:text-white hover:bg-white dark:hover:bg-gray-600/80 shadow-md backdrop-blur-sm transition-colors"
-                >
-                  <Download className="w-5 h-5" />
-                  Export
-                </button>
-                
+            {/* Quick Actions for mobile */}
+            {isMobile && messages.length <= 1 && (
+              <QuickActions onQuickAction={handleQuickAction} />
+            )}
+            
+            <div className="border-t border-slate-700/50 dark:border-gray-700/30 p-3 md:p-4">
+              <div className="flex gap-2 md:gap-4">
+                {!isMobile && (
+                  <button
+                    onClick={exportChat}
+                    className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl bg-white/90 dark:bg-gray-700/80 text-gray-800 dark:text-white hover:bg-white dark:hover:bg-gray-600/80 shadow-md backdrop-blur-sm transition-colors text-sm"
+                  >
+                    <Download className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="hidden md:inline">Export</span>
+                  </button>
+                )}
                 
                 <form
                   onSubmit={(e) => {
@@ -455,28 +529,47 @@ function App() {
                   className="flex-1 flex gap-2"
                 >
                   <input
-                    
+                    ref={messageInputRef}
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-white/90 dark:bg-gray-700/80 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border-0 shadow-md backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder={isMobile ? "Ask me anything..." : "Type your message..."}
+                    className="flex-1 px-3 md:px-4 py-2 md:py-2.5 rounded-xl bg-white/90 dark:bg-gray-700/80 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border-0 shadow-md backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm md:text-base"
+                    disabled={isTyping}
                   />
                   
                   <button
                     type="submit"
-                     className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-lg transition-colors flex items-center gap-2"
+                    disabled={isTyping || !message.trim()}
+                    className="px-3 md:px-4 py-2 md:py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium shadow-lg transition-colors flex items-center gap-1 md:gap-2 text-sm disabled:cursor-not-allowed"
                   >
-                    <Send className="w-5 h-5" />
-                    Send
+                    <Send className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="hidden sm:inline">Send</span>
                   </button>
-                  </form>
+                </form>
               </div>
             </div>
           </div>
         </main>
+        
         <Footer />
       </div>
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        isOpen={showMobileMenu}
+        onClose={() => setShowMobileMenu(false)}
+        user={user}
+        mode={mode}
+        setMode={setMode}
+        onAuth={() => setShowAuthModal(true)}
+        onLogout={handleLogout}
+        onClearHistory={clearChatHistory}
+        onExportChat={exportChat}
+        messages={messages}
+        formatDate={formatDate}
+      />
+
       {/* Authentication Modal */}
       <AuthModal
         isOpen={showAuthModal}
@@ -486,4 +579,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
