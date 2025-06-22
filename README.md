@@ -5,6 +5,10 @@
 [![Built with: FastAPI](https://img.shields.io/badge/Built_with-FastAPI-0e83cd?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Built with: React](https://img.shields.io/badge/Built_with-React-61DAFB?logo=react)](https://reactjs.org/)
 [![Built with: TypeScript](https://img.shields.io/badge/TypeScript-Enabled-blue?logo=typescript)](https://www.typescriptlang.org/)
+![Code Size](https://img.shields.io/github/languages/code-size/PulkitSingh09/chatbot-for-college)
+![Model: LLaMA3-8B](https://img.shields.io/badge/OpenRouter-LLaMA--3--8B--Instruct-blueviolet)
+![Last Commit](https://img.shields.io/github/last-commit/PulkitSingh09/chatbot-for-college?color=purple)
+
 
 An intelligent web-based chatbot designed to help students get answers to college-related queries — from FAQs like attendance and hostel rules to dynamic AI-powered responses.
 This chatbot is designed to provide you with information, answers, and guidance on various college-related topics.
