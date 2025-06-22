@@ -136,12 +136,12 @@ def chat(data: ChatRequest, db: Session = Depends(lambda: SessionLocal())):
         best_match = None
         best_score = 0
         for faq in faqs:
-            score = fuzz.partial_ratio(user_input.lower().strip(), faq.question.lower().strip())
+            score = fuzz.token_set_ratio(user_input.lower().strip(), faq.question.lower().strip())
 
             if score > best_score:
                 best_match = faq
                 best_score = score
-        if best_score >= 40:
+        if best_score >= 35:
             return {"response": best_match.answer}
         else:
             return {"response": " No match found. Try switching to GPT mode."}
